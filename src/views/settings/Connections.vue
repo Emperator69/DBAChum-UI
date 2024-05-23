@@ -147,13 +147,13 @@
 </template>
 
 <script>
-import Confirmation from '../../components/dialogs/Confirmation.vue'
-import Alert from '../../components/dialogs/Alert.vue'
-import Spinner from '../../components/dialogs/Spinner.vue'
-import { clearObject, transferArrayToObject, sleep } from '../../assets/js/tools.js'
-import { ICON_PREFIX } from '../../assets/data/globals.json'
-import Table from '../../components/Table.vue'
-import { get_available_db_type, get_existing_db_connection, upsert_db_connection_profile, delete_db_connection_profile } from '../../assets/js/database.js'
+import Confirmation from '/src/components/dialogs/Confirmation.vue'
+import Alert from '/src/components/dialogs/Alert.vue'
+import Spinner from '/src/components/dialogs/Spinner.vue'
+import { clearObject, transferArrayToObject, sleep } from '/src/assets/js/tools.js'
+import { ICON_PREFIX } from '/src/assets/data/globals.json'
+import Table from '/src/components/Table.vue'
+import { get_available_db_type, get_existing_db_connection, upsert_db_connection_profile, delete_db_connection_profile } from '/src/assets/js/database.js'
 
 
 export default {
@@ -225,16 +225,19 @@ export default {
 
             this.confirmation.show = false
 
-            this.spinner.show = true
+            if(value){
 
-            sleep(3000).then(() => {
-                if (value && this.action == 'save') {
-                    this.upsertConnection()
-                }
-                else if (value && this.action == 'delete') {
-                    this.deleteConnectionDetails()
-                }
-            })
+                this.spinner.show = true
+
+                sleep(3000).then(() => {
+                    if (this.action == 'save') {
+                        this.upsertConnection()
+                    }
+                    else if (this.action == 'delete') {
+                        this.deleteConnectionDetails()
+                    }
+                })
+            }
         },
         clearForm: function () {
             clearObject(this.formData)
@@ -249,7 +252,7 @@ export default {
         },
         deleteConnectionDetails: async function () {
 
-            let result = await delete_db_connection_profile(id, db)
+            let result = await delete_db_connection_profile(this.selectedId, this.selectedDB)
             this.spinner.show = false
             if (result.data.status) {
                 this.showAlert(true, 'Success! ' + result.data.message)

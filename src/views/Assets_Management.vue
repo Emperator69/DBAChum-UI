@@ -51,7 +51,7 @@
     </div>
     <div
         class="flex-col mx-4 mt-4 overflow-x-auto shadow-md rounded h-max no-scrollbar shadow-lg shadow-black third-degree-form pt-4 px-4">
-        <Table :count="this.totalPages" :rows="JSON.parse(this.List)" :withAction="true" @editdata="onEditDetail"
+        <Table :count="this.totalPages" :rows="this.List" :withAction="true" @editdata="onEditDetail"
             @deletedata="onDeleteDetail" />
         <Pagination :total-pages="totalPages" :current-page="currentPage" @pagechanged="onPageChange" />
     </div>
@@ -168,30 +168,28 @@
 </template>
 
 <script>
-import Table from '../components/Table.vue'
-import { ICON_PREFIX } from '../assets/data/globals.json'
-import Pagination from '../components/Pagination.vue'
-import Forms_Modal from '../components/Forms_Modal.vue'
-import Spinner from '../components/dialogs/Spinner.vue'
-import Confirmation from '../components/dialogs/Confirmation.vue'
-import { clearObject, transferArrayToObject, sleep } from '../assets/js/tools.js'
-import Alert from '../components/dialogs/Alert.vue'
-import { delete_asset, get_asset_environment, get_asset_list, get_asset_os, get_asset_type, upsert_assert } from '../assets/js/asset.js'
+import Table from '/src/components//Table.vue'
+import { ICON_PREFIX } from '/src/assets/data/globals.json'
+import Pagination from '/src/components//Pagination.vue'
+import Forms_Modal from '/src/components//Forms_Modal.vue'
+import Spinner from '/src/components//dialogs/Spinner.vue'
+import Confirmation from '/src/components//dialogs/Confirmation.vue'
+import { clearObject, transferArrayToObject, sleep } from '/src/assets/js/tools.js'
+import Alert from '/src/components//dialogs/Alert.vue'
+import { delete_asset, get_asset_environment, get_asset_list, get_asset_os, get_asset_type, upsert_assert } from '/src/assets/js/asset.js'
 
 export default {
     data() {
         return {
             action: '',
             rawdb: null,
-            databases: null,
-            selectedDB: '',
-            existingDBConn: null,
             showPassword: false,
             assetType: null,
+            assetOS: null,
             selectedSearchType: 1,
             assetEnv: null,
             selectedSearchEnv: 1,
-            assetOS: null,
+            selectedOS: null,
             currentPage: 1,
             totalPages: 0,
             selectedId: null,
@@ -244,19 +242,17 @@ export default {
             this.getAssetList()
         },
         onEditDetail: function (data) {
-            let os = JSON.stringify(this.assetOS)
-            let result = JSON.parse(data)
 
-            result.Id = +result.Id
-            result['OS'] = +JSON.parse(os).filter(item => item.Name === result.OS)[0].Id
-            result['Type'] = this.selectedSearchType
-            result['Environment'] = this.selectedSearchEnv
-
-            this.transferArray(result, 
+            this.transferArray(data, 
                 {
                     IP: 'IP Address'
                 }
             )
+
+            this.formData.OS = (data.OS === "Linux") ? 1 : 2
+            this.formData.Type = this.selectedSearchType
+            this.formData.Environment = this.selectedSearchEnv
+
             this.showForm('Edit')
         },
         onDeleteDetail: function(data){
@@ -320,7 +316,7 @@ export default {
             }
             
             let result = await get_asset_list(JSON.stringify(details), this.currentPage)
-            this.List = JSON.stringify(result.data.message)
+            this.List = result.data.message
             this.totalPages = result.data.count
         },
         confirmAction: function (value) {

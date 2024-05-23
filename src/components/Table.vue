@@ -58,8 +58,8 @@
 </template>
 
 <script>
-import { ICON_PREFIX, MODULES } from '../assets/data/globals.json';
-import { makeTitle } from '../assets/js/tools';
+import { ICON_PREFIX } from '/src/assets/data/globals.json';
+import { makeTitle } from '/src/assets/js/tools';
 
 export default {
     data() {
@@ -98,10 +98,10 @@ export default {
             })
         },
         setEditDetail: function (data) {
-            this.$emit('editdata', JSON.stringify(data))
+            this.$emit('editdata', data)
         },
         setDeleteDetail: function (data) {
-            this.$emit('deletedata', JSON.stringify(data))
+            this.$emit('deletedata', data)
         },
         setTitle: function (string) {
             return makeTitle(string)
