@@ -188,3 +188,6 @@ body {
 .create-or-add:hover {
     background-color: #1b7e44;
 }
+.profile-image {
+    border-color: #35383E;
+}
